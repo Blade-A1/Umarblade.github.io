@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UmarBlade - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Portfolio Page Specific Styles */
+        .portfolio-page-header {
+            background: linear-gradient(135deg, rgba(99, 102, 255, 0.15), rgba(0, 212, 255, 0.1));
+            padding: 80px 0;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            position: relative;
+        }
+
+        .portfolio-page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 212, 255, 0.1) 50%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .portfolio-page-header h1 {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .portfolio-page-header p {
+            color: var(--text-light);
+            font-size: 1.3rem;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .portfolio-container {
+            padding: 60px 0;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 1;
+            background: rgba(0, 212, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .portfolio-item.error {
+            background: linear-gradient(135deg, rgba(99, 102, 255, 0.2), rgba(0, 212, 255, 0.1));
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .portfolio-item.error::before {
+            content: '⚠';
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+            border-color: var(--primary-color);
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .portfolio-item-number {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 212, 255, 0.9);
+            color: var(--dark-bg);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-item-number {
+            opacity: 1;
+        }
+
+        /* Lightbox */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+        }
+
+        .lightbox-wrapper {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-modal img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 10px;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            background: rgba(0, 212, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            line-height: 1;
+        }
+
+        .lightbox-close:hover {
+            color: var(--secondary-color);
+            transform: scale(1.2);
+            background: rgba(255, 0, 128, 0.2);
+            border-color: var(--secondary-color);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .portfolio-page-header h1 {
+                font-size: 2.2rem;
+                text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+            }
+
+            .portfolio-page-header p {
+                font-size: 1.1rem;
+            }
+
+            .lightbox-close {
+                font-size: 2rem;
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 0.8rem;
+            }
+
+            .portfolio-page-header {
+                padding: 50px 0;
+            }
+
+            .portfolio-page-header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+
+            .portfolio-page-header p {
+                font-size: 1rem;
+            }
+
+            .lightbox-modal img {
+                max-height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <h1>UmarBlade</h1>
+                </div>
+                <nav class="menu">
+                    <ul>
+                        <li><a href="index.html#home">Asosiy</a></li>
+                        <li><a href="index.html#about">Men Haqimda</a></li>
+                        <li><a href="index.html#contact">Bog'lanish</a></li>
+                    </ul>
+                </nav>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Header -->
+    <section class="portfolio-page-header">
+        <div class="container">
+            <h1>Mening Minecraft Dizaynlari</h1>
+            <p>58 ta zor minecraft dizaynlarim</p>
+        </div>
+    </section>
+
+    <!-- Portfolio Content -->
+    <section class="portfolio-container">
+        <div class="container">
+            <a href="index.html" class="back-link">← Orqaga</a>
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- Portfolio items will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox-modal" id="lightboxModal">
+        <div class="lightbox-wrapper">
+            <span class="lightbox-close" id="lightboxClose">&times;</span>
+            <img id="lightboxImage" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>UmarBlade</h4>
+                    <p>Professional Minecraft Designer</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Tez havolalar</h4>
+                    <ul>
+                        <li><a href="index.html">Asosiy</a></li>
+                        <li><a href="index.html#about">Men Haqimda</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Umarblade</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const portfolioGrid = document.getElementById('portfolioGrid');
+        const lightboxModal = document.getElementById('lightboxModal');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxClose = document.getElementById('lightboxClose');
+
+        const totalImages = 58;
+        let currentImageIndex = 0;
+
+        // Generate portfolio items
+        function generatePortfolio() {
+            portfolioGrid.innerHTML = '';
+            for (let i = 1; i <= totalImages; i++) {
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'portfolio-item';
+                
+                const img = document.createElement('img');
+                // Try .jpg first
+                img.src = `Detail/${i}.jpg`;
+                img.alt = `Dizayn ${i}`;
+                img.dataset.index = i - 1;
+                img.loading = 'lazy';
+                
+                // Enhanced error handler with multiple fallbacks
+                let attemptCount = 0;
+                img.onerror = function() {
+                    attemptCount++;
+                    
+                    if (attemptCount === 1) {
+                        // Try .png
+                        this.src = `Detail/${i}.png`;
+                    } else if (attemptCount === 2) {
+                        // Try uppercase extension
+                        this.src = `Detail/${i}.JPG`;
+                    } else if (attemptCount === 3) {
+                        // Try uppercase .PNG
+                        this.src = `Detail/${i}.PNG`;
+                    } else {
+                        // Show error state
+                        portfolioItem.classList.add('error');
+                        img.style.display = 'none';
+                        portfolioItem.innerHTML = `<div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            Dizayn ${i}<br><small>Rasm topilmadi</small>
+                        </div>`;
+                    }
+                };
+                
+                // Handle successful load
+                img.onload = function() {
+                    portfolioItem.classList.remove('error');
+                };
+                
+                portfolioItem.appendChild(img);
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'portfolio-item-number';
+                numberSpan.textContent = i;
+                portfolioItem.appendChild(numberSpan);
+                
+                portfolioItem.addEventListener('click', () => openLightbox(i-1));
+                portfolioGrid.appendChild(portfolioItem);
+            }
+        }
+
+        // Open lightbox
+        function openLightbox(index) {
+            currentImageIndex = index;
+            lightboxModal.classList.add('active');
+            updateLightboxImage();
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close lightbox
+        function closeLightbox() {
+            lightboxModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Update lightbox image
+        function updateLightboxImage() {
+            const imageNum = currentImageIndex + 1;
+            lightboxImage.src = `Detail/${imageNum}.jpg`;
+            
+            // Enhanced fallback logic
+            let attemptCount = 0;
+            lightboxImage.onerror = function() {
+                attemptCount++;
+                
+                if (attemptCount === 1) {
+                    this.src = `Detail/${imageNum}.png`;
+                } else if (attemptCount === 2) {
+                    this.src = `Detail/${imageNum}.JPG`;
+                } else if (attemptCount === 3) {
+                    this.src = `Detail/${imageNum}.PNG`;
+                }
+            };
+        }
+
+        // Event listeners
+        lightboxClose.addEventListener('click', closeLightbox);
+
+        // Close on background click
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
+
+        // ESC key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // Initialize
+        generatePortfolio();
+
+        // Hamburger menu
+        const hamburger = document.querySelector('.hamburger');
+        const menu = document.querySelector('.menu');
+
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
+        }
+
+        document.querySelectorAll('.menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    menu.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
